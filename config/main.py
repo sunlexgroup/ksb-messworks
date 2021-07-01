@@ -1,10 +1,9 @@
 import os
 import secrets
-from typing import Any, Dict, List, Optional, Union
+from typing import List, Optional, Union
 
-from pydantic import AnyHttpUrl, BaseSettings, EmailStr, HttpUrl, PostgresDsn, validator
+from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
 from dotenv import load_dotenv
-from pathlib import Path
 
 load_dotenv(".env")
 
@@ -34,8 +33,8 @@ class Settings(BaseSettings):
 
     # Database settings
     POSTGRES_SERVER: str = "localhost"
-    POSTGRES_USER: str = "ksb-messworker"
-    POSTGRES_PASSWORD: str = "qwerty123456"
+    POSTGRES_USER: str = "postgres"
+    POSTGRES_PASSWORD: str = "postgres"
     POSTGRES_DB: str ="ksb-messworks-dev"
     DATABASE_URI: Optional[PostgresDsn] = f'postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:5432/{POSTGRES_DB}'
 
