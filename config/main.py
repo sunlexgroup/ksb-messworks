@@ -15,7 +15,13 @@ class Settings(BaseSettings):
     # BACKEND_CORS_ORIGINS is a JSON-formatted list of origins
     # e.g: '["http://localhost", "http://localhost:4200", "http://localhost:3000", \
     # "http://localhost:8080", "http://127.0.0.1"]'
-    BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
+    BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = [
+        "http://localhost",
+        "http://localhost:8080",
+        "http://localhost:8000",
+        "http://localhost:3000",
+        "http://0.0.0.0:8000",
+    ]
 
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
@@ -29,7 +35,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = secrets.token_urlsafe(32)
 
     PROJECT_NAME: str = "KSB MESSWORKS"
-    PROJECT_DESCRIPTION: str = "Сервис для работы с мессенджерами"
+    PROJECT_DESCRIPTION: str = "Сервис для сбора данных из мессенджеров"
     PROJECT_AUTHOR: str = "Aleksandr Kochetkov"
     PROJECT_VERSION: str = "0.0.1"
     PROJECT_OWNER: str = 'ООО "НПЦ"КСБ" г.Чебоксары'

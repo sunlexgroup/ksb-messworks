@@ -2,10 +2,18 @@ import uvicorn
 from fastapi import FastAPI
 
 from config.db import db
+from config.main import settings
 from apps.telegrammer.router import telegrammer_uri
+from middlewares.cors_middleware import apply_cors_middleware
 
 
-app = FastAPI(title="Async FastAPI")
+app = FastAPI(
+    title=settings.PROJECT_NAME,
+    description=settings.PROJECT_DESCRIPTION,
+    version=settings.PROJECT_VERSION
+)
+
+apply_cors_middleware(app)
 
 
 @app.on_event("startup")
