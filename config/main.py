@@ -3,9 +3,12 @@ import secrets
 from typing import List, Optional, Union
 
 from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
-from dotenv import load_dotenv
 
-load_dotenv(".env")
+
+try:
+    from .dev import postgres_database_settings
+except ImportError:
+    from .prod import postgres_database_settings
 
 
 class Settings(BaseSettings):
@@ -32,22 +35,22 @@ class Settings(BaseSettings):
     PROJECT_OWNER: str = 'ООО "НПЦ"КСБ" г.Чебоксары'
 
     # Database settings
-    POSTGRES_SERVER: str = "localhost"
-    POSTGRES_USER: str = "postgres"
-    POSTGRES_PASSWORD: str = "postgres"
-    POSTGRES_DB: str ="ksb-messworks-dev"
-    DATABASE_URI: Optional[PostgresDsn] = f'postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:5432/{POSTGRES_DB}'
+    POSTGRES_SERVER: str = postgres_database_settings['POSTGRES_SERVER']
+    POSTGRES_USER: str = postgres_database_settings['POSTGRES_USER']
+    POSTGRES_PASSWORD: str = postgres_database_settings['POSTGRES_PASSWORD']
+    POSTGRES_DB: str = postgres_database_settings['POSTGRES_DB']
+    POSTGRES_PORT: int = postgres_database_settings['POSTGRES_PORT']
+    DATABASE_URI: Optional[PostgresDsn] = f'postgresql://{POSTGRES_USER}' \
+                                          f':{POSTGRES_PASSWORD}' \
+                                          f'@{POSTGRES_SERVER}' \
+                                          f':{POSTGRES_PORT}/{POSTGRES_DB}'
 
     BASE_DIR: str = os.path.dirname(os.path.dirname(__file__))
-
-    DEBUG: bool = True
 
     TENACITY_MAX_TRIES: int = 60*5
     TENACITY_WAIT_SECONDS: int = 1
 
     class Config:
-        env_file = ".env"
-        env_file_encoding = 'utf-8'
         case_sensitive = True
 
 
