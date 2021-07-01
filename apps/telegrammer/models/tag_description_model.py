@@ -5,7 +5,7 @@ from config.db import metadata, db
 tag_description = sqlalchemy.Table(
     "messworks_tag_description",
     metadata,
-    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True, unique=True),
     sqlalchemy.Column("tag", sqlalchemy.String, unique=True),
     sqlalchemy.Column("description", sqlalchemy.String, nullable=True)
 )
@@ -13,13 +13,13 @@ tag_description = sqlalchemy.Table(
 
 class TagDescription:
     @classmethod
-    async def get(cls):
-        query = tag_description.select()
+    async def get_tag(cls, tag: str):
+        query = tag_description.select().where(tag_description.c.tag == tag)
         data = await db.fetch_one(query)
         return data
 
     @classmethod
-    async def create(cls, **data):
+    async def add_new_tag(cls, **data):
         query = tag_description.insert().values(**data)
         created = await db.execute(query)
         return created

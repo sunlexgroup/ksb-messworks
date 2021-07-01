@@ -27,7 +27,8 @@ async def shutdown():
 
 app.include_router(telegrammer_uri.router)
 
-@app.get("")
+
+@app.get("/")
 async def root():
     return {"message": "This is telegram worker"}
 

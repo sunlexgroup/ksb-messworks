@@ -1,7 +1,9 @@
-from typing import Coroutine, Any
+from typing import Coroutine, Any, List
 
-from fastapi import APIRouter, HTTPException
-from apps.telegrammer.logic.core import get_info_about_endpoint
+from fastapi import APIRouter, HTTPException, status
+
+from ..serializers.tag_deskription_serializer import TagDescription
+from ..models.tag_description_model import TagDescription as TDmodels
 
 router = APIRouter(
     prefix="/telegrammer",
@@ -10,11 +12,19 @@ router = APIRouter(
 )
 
 
-@router.get("/")
-async def get_endpoint_description() -> Coroutine[Any, Any, str]:
+@router.get("/{tag}", response_model=TagDescription)
+async def get_endpoint_description(tag: str):
     """
     Данный метод возвращает форматированную строку с кратким описание возможностей данного ендпоинта, а также ссылку на
     интерактивную документацию.
-    :return: str
     """
-    return get_info_about_endpoint()
+    data = await TDmodels.get_tag(tag)
+    if data is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Нет данных по тегу")
+    return TagDescription(**data).dict()
+
+
+@router.post("/add-tag/")
+async def add_new_tag(tag: TagDescription):
+    tag_id = await TDmodels.add_new_tag(**tag.dict())
+    return {"created": tag_id}
