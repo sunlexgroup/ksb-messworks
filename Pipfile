@@ -16,6 +16,13 @@ fastapi-sqlalchemy = "*"
 alembic = "*"
 python-dotenv = "*"
 psycopg2 = "*"
+telethon = "*"
+pillow = "*"
+aiohttp = "*"
+hachoir = "*"
 
 [packages.databases]
 extras = [ "postgresql",]
+
+[packages.python-socks]
+extras = [ "asyncio",]

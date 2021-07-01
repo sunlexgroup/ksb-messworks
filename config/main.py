@@ -6,9 +6,9 @@ from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
 
 
 try:
-    from .dev import postgres_database_settings
+    from .dev import postgres_database_settings, telegram_settings
 except ImportError:
-    from .prod import postgres_database_settings
+    from .prod import postgres_database_settings, telegram_settings
 
 
 class Settings(BaseSettings):
@@ -52,6 +52,12 @@ class Settings(BaseSettings):
                                           f':{POSTGRES_PORT}/{POSTGRES_DB}'
 
     BASE_DIR: str = os.path.dirname(os.path.dirname(__file__))
+
+    # Telegram settings
+    TELEGRAM_BOT_HTTP_TOKEN: str = telegram_settings['TELEGRAM_BOT_HTTP_TOKEN']
+    TELEGRAM_API_ID: str = telegram_settings['TELEGRAM_API_ID']
+    TELEGRAM_API_HASH: str = telegram_settings['TELEGRAM_API_HASH']
+
 
     TENACITY_MAX_TRIES: int = 60*5
     TENACITY_WAIT_SECONDS: int = 1
