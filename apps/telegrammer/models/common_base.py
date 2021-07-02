@@ -27,8 +27,9 @@ chat_messages = sqlalchemy.Table(
     # Дата и время сообщения
     sqlalchemy.Column(
         'created_datetime',
-        sqlalchemy.DateTime(),
-        default=datetime.datetime.utcnow
+        sqlalchemy.DateTime,
+        nullable=False,
+        server_default=sqlalchemy.func.current_timestamp()
     ),
     # ID автора сообщения
     sqlalchemy.Column(

@@ -23,7 +23,11 @@ class ChatMessages:
         Метод добавляет полученное сообщение из чата в таблицу
         """
         query = common_base.chat_messages.insert().values(**message_data)
-        await db.connect()
-        await db.execute(query)
-        await db.disconnect()
-        return True
+        try:
+            await db.connect()
+            await db.execute(query)
+        except Exception:
+            return False
+        finally:
+            await db.disconnect()
+            return True

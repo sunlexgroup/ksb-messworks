@@ -5,11 +5,9 @@ from typing import List, Optional, Union
 from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
 
 try:
-    from .dev import postgres_database_settings, \
-        telegram_settings, proxy_settings
+    from .dev import postgres_database_settings, telegram_settings, proxy_settings
 except ImportError:
-    from .prod import postgres_database_settings, \
-        telegram_settings, proxy_settings
+    from .prod import postgres_database_settings, telegram_settings, proxy_settings
 
 
 class Settings(BaseSettings):
@@ -65,7 +63,7 @@ class Settings(BaseSettings):
     TENACITY_WAIT_SECONDS: int = 1
 
     # Proxy settings
-    USE_PROXY: bool = True
+    USE_PROXY: bool = False
 
     PROXY_TYPE = proxy_settings['PROXY_TYPE']
     PROXY_HOST: str = proxy_settings['PROXY_HOST']

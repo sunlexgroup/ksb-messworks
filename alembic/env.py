@@ -63,7 +63,7 @@ def my_compare_server_default(context, inspected_column,
     # return True if the defaults are different,
     # False if not, or None to allow the default implementation
     # to compare these defaults
-    return None
+    return True
 
 
 def run_migrations_online():
