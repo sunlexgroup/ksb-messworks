@@ -1,3 +1,5 @@
+from config.base_models import common_base
+from config.db import db
 
 
 async def get_info_about_endpoint() -> str:
@@ -8,3 +10,20 @@ async def get_info_about_endpoint() -> str:
     """
 
     return "abracadabra"
+
+
+class ChatMessages:
+    """
+    Класс для работы с таблицей chat_messages
+    """
+
+    @classmethod
+    async def add_message(cls, message_data: dict):
+        """
+        Метод добавляет полученное сообщение из чата в таблицу
+        """
+        query = common_base.chat_messages.insert().values(**message_data)
+        await db.connect()
+        await db.execute(query)
+        await db.disconnect()
+        return True

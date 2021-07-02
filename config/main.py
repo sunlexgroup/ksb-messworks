@@ -4,17 +4,20 @@ from typing import List, Optional, Union
 
 from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
 
-
 try:
-    from .dev import postgres_database_settings, telegram_settings
+    from .dev import postgres_database_settings, \
+        telegram_settings, proxy_settings
 except ImportError:
-    from .prod import postgres_database_settings, telegram_settings
+    from .prod import postgres_database_settings, \
+        telegram_settings, proxy_settings
 
 
 class Settings(BaseSettings):
-    # BACKEND_CORS_ORIGINS is a JSON-formatted list of origins
-    # e.g: '["http://localhost", "http://localhost:4200", "http://localhost:3000", \
-    # "http://localhost:8080", "http://127.0.0.1"]'
+    """
+    Класс унаследован от базового класса настроек библиотеки Pydantic
+    """
+
+    # CORS settings
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = [
         "http://localhost",
         "http://localhost:8080",
@@ -23,9 +26,9 @@ class Settings(BaseSettings):
         "http://0.0.0.0:8000",
     ]
 
-
     @validator("BACKEND_CORS_ORIGINS", pre=True)
-    def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
+    def assemble_cors_origins(cls, v: Union[str, List[str]]) \
+            -> Union[List[str], str]:
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",")]
         elif isinstance(v, (list, str)):
@@ -58,9 +61,18 @@ class Settings(BaseSettings):
     TELEGRAM_API_ID: str = telegram_settings['TELEGRAM_API_ID']
     TELEGRAM_API_HASH: str = telegram_settings['TELEGRAM_API_HASH']
 
-
-    TENACITY_MAX_TRIES: int = 60*5
+    TENACITY_MAX_TRIES: int = 60 * 5
     TENACITY_WAIT_SECONDS: int = 1
+
+    # Proxy settings
+    USE_PROXY: bool = True
+
+    PROXY_TYPE = proxy_settings['PROXY_TYPE']
+    PROXY_HOST: str = proxy_settings['PROXY_HOST']
+    PROXY_PORT: int = proxy_settings['PROXY_PORT']
+    PROXY_USERNAME: str = proxy_settings['PROXY_USERNAME']
+    PROXY_PASSWORD: str = proxy_settings['PROXY_PASSWORD']
+    PROXY_RDNS: Optional[bool] = proxy_settings['PROXY_RDNS']
 
     class Config:
         case_sensitive = True

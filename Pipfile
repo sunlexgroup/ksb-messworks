@@ -20,9 +20,5 @@ telethon = "*"
 pillow = "*"
 aiohttp = "*"
 hachoir = "*"
-
-[packages.databases]
-extras = [ "postgresql",]
-
-[packages.python-socks]
-extras = [ "asyncio",]
+databases = {extras = [ "postgresql",]}
+python-socks = {extras = ["asyncio"], version = "*"}

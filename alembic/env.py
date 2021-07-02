@@ -49,10 +49,21 @@ def run_migrations_offline():
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        compare_server_default=my_compare_server_default,
+        compare_default=True
     )
 
     with context.begin_transaction():
         context.run_migrations()
+
+
+def my_compare_server_default(context, inspected_column,
+            metadata_column, inspected_default, metadata_default,
+            rendered_metadata_default):
+    # return True if the defaults are different,
+    # False if not, or None to allow the default implementation
+    # to compare these defaults
+    return None
 
 
 def run_migrations_online():
