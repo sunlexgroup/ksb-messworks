@@ -1,6 +1,6 @@
 from telethon.sync import TelegramClient, events
 from config.main import settings
-from apps.telegrammer.logic.core import ChatMessages
+from apps.telegrammer.logic.core import ChatMessages, UserMessages
 
 import logging
 logging.basicConfig(format='[%(levelname) 5s/%(asctime)s] %(name)s: %(message)s',
@@ -23,77 +23,48 @@ else:
 bot = TelegramClient('ksb_telegramer_bot',
                      settings.TELEGRAM_API_ID,
                      settings.TELEGRAM_API_HASH,
-                     proxy=telegram_proxy_settings)\
+                     proxy=telegram_proxy_settings) \
     .start(bot_token=settings.TELEGRAM_BOT_HTTP_TOKEN)
 
 
-async def do_something(me):
-    pass
-
-
-@bot.on(events.NewMessage())
+@bot.on(events.NewMessage(incoming=True))
 async def telegram_event_handler(event):
     """
-    Бот слушает все сообщения групп в которых он состоит.
+    Бот слушает все сообщения групп в которых он состоит, а также личные сообщения.
+    На личные сообщения от отправляет уведомления о его получении.
     При получении любого сообщения в любой группе мы получаем данные этого
     сообщения. После чего, данные записываются в базу данных.
-    Получаемый ответ из чата:
-    Chat(id=592513999, title='ksb_test_chat_bot', photo=ChatPhotoEmpty(),
-    participants_count=3, date=datetime.datetime(2021, 7, 2, 4, 23, 32,
-    tzinfo=datetime.timezone.utc), version=2, creator=False, kicked=False,
-    left=False, deactivated=False, call_active=False, call_not_empty=False,
-    migrated_to=None, admin_rights=None, default_banned_rights=
-    ChatBannedRights(until_date=datetime.datetime(2038, 1, 19, 3, 14, 7,
-    tzinfo=datetime.timezone.utc), view_messages=False, send_messages=False,
-    send_media=False, send_stickers=False, send_gifs=False, send_games=False,
-    send_inline=False, embed_links=False, send_polls=False, change_info=False,
-    invite_users=False, pin_messages=False)):-592513999 -
-    Автор User(id=168677602, is_self=False, contact=False, mutual_contact=False,
-    deleted=False, bot=False, bot_chat_history=False, bot_nochats=False,
-    verified=False, restricted=False, min=False, bot_inline_geo=False,
-    support=False, scam=False, apply_min_photo=True, fake=False,
-    access_hash=5909172583760012408, first_name='Aleksandr',
-    last_name='Kochetkov', username='AleksandrKochetkov', phone=None,
-    photo=UserProfilePhoto(photo_id=724464784613943255, dc_id=2,
-    has_video=False, stripped_thumb=None), status=UserStatusRecently(),
-    bot_info_version=None, restriction_reason=[], bot_inline_placeholder=None,
-    lang_code='ru'):168677602 "Тест прокси"
-
-    # Данные при получении личного сообщения боту.
-    User(id=168677602, is_self=False, contact=False, mutual_contact=False,
-    deleted=False, bot=False, bot_chat_history=False, bot_nochats=False,
-    verified=False, restricted=False, min=False, bot_inline_geo=False,
-    support=False, scam=False, apply_min_photo=True, fake=False,
-    access_hash=5909172583760012408, first_name='Aleksandr',
-    last_name='Kochetkov', username='AleksandrKochetkov',
-    phone=None, photo=UserProfilePhoto(photo_id=724464784613943255, dc_id=2,
-    has_video=False, stripped_thumb=None), status=UserStatusRecently(),
-    bot_info_version=None, restriction_reason=[], bot_inline_placeholder=None,
-    lang_code='ru'):168677602 - Автор User(id=168677602, is_self=False,
-    contact=False, mutual_contact=False, deleted=False, bot=False,
-    bot_chat_history=False, bot_nochats=False, verified=False, restricted=False,
-    min=False, bot_inline_geo=False, support=False, scam=False,
-    apply_min_photo=True, fake=False, access_hash=5909172583760012408,
-    first_name='Aleksandr', last_name='Kochetkov', username='AleksandrKochetkov',
-    phone=None, photo=UserProfilePhoto(photo_id=724464784613943255, dc_id=2,
-    has_video=False, stripped_thumb=None), status=UserStatusRecently(),
-    bot_info_version=None, restriction_reason=[], bot_inline_placeholder=None,
-    lang_code='ru'):168677602 "Снова привет"
     """
     chat = await event.get_chat()
     sender = await event.get_sender()
+    if hasattr(chat, 'title'):
+        # полученные данные отправляем в базу.
+        data = {
+            'chat_id': chat.id,
+            'chat_title': chat.title,
+            'author_id': sender.id,
+            'author_firstname': sender.first_name,
+            'author_lastname': sender.last_name,
+            'author_username': sender.username,
+            'message': event.raw_text,
+        }
+        await ChatMessages.add_message(data)
+    else:
+        if event.raw_text == '/start':
+            await bot.send_message(str(sender.username),"Добрый день!\n"
+                                                        "Опишите ваше обращение как можно полнее и детальнее, "
+                                                        "это поможет нам лучше разобраться в сути обращения.")
+            return True
+        await bot.send_message(str(sender.username), "Благодарю вас за обращение, я принял его в работу...")
+        data = {
+            'username_id': sender.id,
+            'firstname': sender.first_name,
+            'lastname': sender.last_name,
+            'username': sender.username,
+            'message': event.raw_text,
+        }
+        await UserMessages.add_message(data)
 
-    # полученные данные отправляем в базу.
-    data = {
-        'chat_id': chat.id,
-        'chat_title': chat.title,
-        'author_id': sender.id,
-        'author_firstname': sender.first_name,
-        'author_lastname': sender.last_name,
-        'author_username': sender.username,
-        'message': event.raw_text,
-    }
-    await ChatMessages.add_message(data)
 
 
 async def main():

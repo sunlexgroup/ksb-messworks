@@ -31,3 +31,24 @@ class ChatMessages:
         finally:
             await db.disconnect()
             return True
+
+
+class UserMessages:
+    """
+    Класс для работы с таблицей user_bot_messages
+    """
+
+    @classmethod
+    async def add_message(cls, message_data: dict):
+        """
+        Метод добавляет полученное сообщение из чата в таблицу
+        """
+        query = common_base.user_bot_messages.insert().values(**message_data)
+        try:
+            await db.connect()
+            await db.execute(query)
+        except Exception:
+            return False
+        finally:
+            await db.disconnect()
+            return True

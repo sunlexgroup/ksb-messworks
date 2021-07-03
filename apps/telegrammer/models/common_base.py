@@ -67,8 +67,8 @@ user_bot_messages = sqlalchemy.Table(
     sqlalchemy.Column(
         'created_datetime',
         sqlalchemy.DateTime(timezone=True),
-        default=datetime.datetime.utcnow,
         nullable=False,
+        server_default=sqlalchemy.func.current_timestamp(),
         index=True
     ),
     # ID пользователя отправившего сообщение
