@@ -30,7 +30,7 @@ app.include_router(telegrammer_uri.router)
 
 @app.get("/")
 async def root():
-    return {"message": "This is telegram worker"}
+    return {"message": "This is messanger worker"}
 
 
 if __name__ == "__main__":

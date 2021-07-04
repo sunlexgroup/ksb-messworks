@@ -10,7 +10,6 @@ class ChatMessageSerializer(BaseModel):
     id: int
     chat_id: int
     chat_title: str
-    chat_message_datetime: datetime.datetime
     created_datetime: datetime.datetime
     author_id: int
     author_firstname: str

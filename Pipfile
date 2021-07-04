@@ -20,5 +20,13 @@ telethon = "*"
 pillow = "*"
 aiohttp = "*"
 hachoir = "*"
-databases = {extras = [ "postgresql",]}
-python-socks = {extras = ["asyncio"], version = "*"}
+
+[packages.databases]
+extras = [ "postgresql",]
+
+[packages.python-socks]
+extras = [ "asyncio",]
+version = "*"
+
+[packages.fastapi-pagination]
+extras = [ "sqlalchemy",]

@@ -1,15 +1,8 @@
+import datetime
+from typing import Optional
+from sqlalchemy import desc
 from config.base_models import common_base
 from config.db import db
-
-
-async def get_info_about_endpoint() -> str:
-    """
-    Делает запрос к базе данных на извлечение краткой справки по передаваемому тегу. Если в базе есть запись, с
-    данным тегом, то возвращаем краткое описание. В случае отсутствия, возвращаем сообщение: "Описание тега не найдено"
-    :return: str - краткое описание тега
-    """
-
-    return "abracadabra"
 
 
 class ChatMessages:
@@ -31,6 +24,38 @@ class ChatMessages:
         finally:
             await db.disconnect()
             return True
+
+
+    @classmethod
+    async def get_message(cls,
+                          start_date: Optional[datetime.datetime],
+                          end_date: Optional[datetime.datetime],
+                          offset: int = 0,
+                          limit: int = 100):
+        """
+        Метод возвращает записи из базы в обратном порядке
+        """
+        if end_date is None:
+            query = common_base.chat_messages.select()\
+                .order_by(desc(common_base.chat_messages.c.created_datetime))\
+                .limit(limit)\
+                .offset(offset)
+        elif start_date is None:
+            query = common_base.chat_messages.select()\
+                .where(common_base.chat_messages.c.created_datetime > start_date) \
+                .order_by(desc(common_base.chat_messages.c.created_datetime)) \
+                .limit(limit) \
+                .offset(offset)
+        else:
+            query = common_base.chat_messages.select() \
+                .where(common_base.chat_messages.c.created_datetime > start_date) \
+                .where(common_base.chat_messages.c.created_datetime < end_date) \
+                .order_by(desc(common_base.chat_messages.c.created_datetime)) \
+                .limit(limit) \
+                .offset(offset)
+        rows = await db.fetch_all(query)
+
+        return [dict(row) for row in rows]
 
 
 class UserMessages:
