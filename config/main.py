@@ -63,7 +63,7 @@ class Settings(BaseSettings):
     TENACITY_WAIT_SECONDS: int = 1
 
     # Proxy settings
-    USE_PROXY: bool = False
+    USE_PROXY: bool = True
 
     PROXY_TYPE = proxy_settings['PROXY_TYPE']
     PROXY_HOST: str = proxy_settings['PROXY_HOST']
