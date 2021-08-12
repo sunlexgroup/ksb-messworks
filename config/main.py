@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     PROJECT_DESCRIPTION: str = "Сервис для сбора данных из мессенджеров"
     PROJECT_AUTHOR: str = "Aleksandr Kochetkov"
     PROJECT_VERSION: str = "0.0.1"
-    PROJECT_OWNER: str = 'ООО "НПЦ"КСБ" г.Чебоксары'
+    PROJECT_OWNER: str = ''
 
     # Database settings
     POSTGRES_SERVER: str = postgres_database_settings['POSTGRES_SERVER']
